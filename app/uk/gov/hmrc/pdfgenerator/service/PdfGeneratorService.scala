@@ -107,6 +107,8 @@ class PdfGeneratorService @Inject()(configuration: Configuration) {
     val pb = Process(command)
     val exitCode = pb.!
 
+    Logger.info("Generated Filename: "+outputFileName)
+
     val file = new File(outputFileName)
     file.deleteOnExit()
     file

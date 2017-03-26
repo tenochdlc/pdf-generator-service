@@ -25,16 +25,20 @@ class PdfGeneratorController @Inject()(val pdfGeneratorService: PdfGeneratorServ
     Logger.debug("******* Generating PDF ***********")
     val htmlForm = createForm()
 
-    htmlForm.bindFromRequest.fold(
-      badRequest => {
-        val errors = badRequest.errors.map(formError => formError.key + " " + formError.messages.mkString(" ")).mkString(" : ")
-        Future.successful(BadRequest(errors))
-      },
-      html => {
-        val pdfA: File = pdfGeneratorService.generateCompliantPdfA(html) // todo make this an Option
-        Future.successful(Ok.sendFile(pdfA, inline = false, onClose = () => pdfA.delete()))
-      }
-    )
+
+    val pdfA: File = pdfGeneratorService.generateCompliantPdfA(request.body.asText.get) // todo make this an Option
+    Future.successful(Ok.sendFile(pdfA, inline = false).withHeaders("Content-Type"->"application/pdf"))
+
+//    htmlForm.bindFromRequest.fold(
+//      badRequest => {
+//        val errors = badRequest.errors.map(formError => formError.key + " " + formError.messages.mkString(" ")).mkString(" : ")
+//        Future.successful(BadRequest(errors))
+//      },
+//      html => {
+//        val pdfA: File = pdfGeneratorService.generateCompliantPdfA(html) // todo make this an Option
+//        Future.successful(Ok.sendFile(pdfA, inline = false).withHeaders("Content-Type"->"application/pdf"))
+//      }
+//    )
   }
 
 
